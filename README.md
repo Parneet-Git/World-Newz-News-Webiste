@@ -1,5 +1,4 @@
 # WORLD NEWS APP
-
 A News Website made in React with Bootstrap and News API, includes infinite scroll, pagination, React Hooks and more...
 
 It is totally made with React functional components and no class component is used.
