@@ -1,6 +1,8 @@
 # World-Newz-News-Webiste
 A News Website made in React with Bootstrap and News API, includes infinite scroll, pagination, React Hooks and more... 
 
+It is totally made with React functional components and no class component is used.
+
 It has total 4 components: NavBar.js, News.js, NewsItem.js, LoadingIcon.js, all written as function components
 which is used widely as compared to class components and uses Hooks as React's functional components main
 characteristics.
