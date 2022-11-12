@@ -82,8 +82,8 @@ const News = (props) => {
   }*/
 
   const fetchMoreData = async () => {
-    await setPage(page + 1);
     let url = `https://newsapi.org/v2/top-headlines?&country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page + 1}&pagesize=${props.pageSize}`;
+    setPage(page + 1);
     let data = await fetch(url);
     let parsedData = await data.json();
     setArticles(articles.concat(parsedData.articles));
@@ -99,7 +99,7 @@ const News = (props) => {
   };
 
   return (
-    <div className='container mt-3'>
+    <div className='container' style={{ marginTop: "5rem" }}>
       <h2 className='text-center text-light mb-4'>World Newz - Top {capitalizeFirstLetter(props.category)} Headlines</h2>
       {loading && <LoadingIcon />}
       <InfiniteScroll
