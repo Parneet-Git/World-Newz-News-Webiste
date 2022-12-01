@@ -15,25 +15,32 @@ const News = (props) => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  // document.title = "World News - " + this.capitalizeFirstLetter(props.category);
+  const axios = require('axios').default;
 
   const updateNews = async () => {
     props.setProgress(10);
-    let url = `https://newsapi.org/v2/top-headlines?&country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pagesize=${props.pageSize}`;
+    console.log(props.apiKey);
+    let options = {
+      method: 'GET',
+      url: 'https://api.newscatcherapi.com/v2/sources',
+      params: { topic: props.category, lang: 'en', sort_by: 'relevancy', page: props.pageSize },
+      headers: {
+        'x-api-key': props.apiKey
+      }
+    };
     props.setProgress(30);
     setLoading(true);
-    let data = await fetch(url);
-    props.setProgress(50);
-    let parsedData = await data.json();
+    let parsedData;
+    await axios.request(options).then(function (response) {
+      parsedData = response.data;
+      console.log(response.data);
+    }).catch(function (error) {
+      console.error(error);
+    });
     props.setProgress(70);
     setArticles(parsedData.articles);
-    setTotalResults(parsedData.totalResults);
+    setTotalResults(parsedData.totalhits);
     setLoading(false);
-    /*this.setState({ // this.setState() to change the state of existing var(s)
-      articles: parsedData.articles,
-      totalResults: parsedData.totalResults,
-      loading: false
-    })*/
     props.setProgress(100);
     window.scrollTo(0, 0);
   }
@@ -43,7 +50,6 @@ const News = (props) => {
     await setPage(1);
     let url = `https://newsapi.org/v2/everything?q=${query}&apiKey=${props.apiKey}&page=${page}&pagesize=${props.pageSize}`;
     props.setProgress(30);
-    // this.setState({ loading: true });
     setLoading(true);
     let data = await fetch(url);
     props.setProgress(50);
@@ -53,35 +59,36 @@ const News = (props) => {
     setTotalResults(parsedData.totalResults);
     setLoading(false);
 
-    /*this.setState({ // this.setState() to change the state of existing var(s)
-      articles: parsedData.articles,
-      totalResults: parsedData.totalResults,
-      loading: false,
-    })*/
-
     props.setProgress(100);
   }
 
   // this function runs after the render function
+
   useEffect(() => {
     updateNews();
-    let searchBtn = document.getElementById('search-btn');
+    let searchBtn = document.querySelector('.search-icon');
     searchBtn.addEventListener('click', () => {
-      let query = document.getElementById('search-box').value;
+      let query = document.querySelector('.search-box').value;
+      if (query.length == 0) {
+        return;
+      }
       searchQuery(query);
+      window.scrollTo(0,0);
     });
+    let query_box = document.querySelector('.search-box');
+    query_box.addEventListener('keydown', (event) => {
+      if(event.key === 'Enter'){
+        if(query_box.value.length == 0){
+          return;
+        }
+        searchQuery(query_box.value);
+        window.scrollTo(0, 0);
+      }
+    })
   }, [])
 
-  /*async componentDidMount() {
-    this.updateNews();
-    let searchBtn = document.getElementById('search-btn');
-    searchBtn.addEventListener('click', (event) => {
-      let query = document.getElementById('search-box').value;
-      this.searchQuery(query);
-    });
-  }*/
 
-  const fetchMoreData = async () => {
+  /* const fetchMoreData = async () => {
     let url = `https://newsapi.org/v2/top-headlines?&country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page + 1}&pagesize=${props.pageSize}`;
     setPage(page + 1);
     let data = await fetch(url);
@@ -89,35 +96,27 @@ const News = (props) => {
     setArticles(articles.concat(parsedData.articles));
     setTotalResults(parsedData.totalResults);
     setLoading(false);
-
-    /*this.setState({ // this.setState() to change the state of existing var(s)
-      articles: articles.concat(parsedData.articles),
-      totalResults: parsedData.totalResults,
-      loading: false
-    });*/
-
-  };
+  }; */
 
   return (
-    <div className='container' style={{ marginTop: "5rem" }}>
-      <h2 className='text-center text-light mb-4'>World Newz - Top {capitalizeFirstLetter(props.category)} Headlines</h2>
+    <div className='main-container'>
       {loading && <LoadingIcon />}
-      <InfiniteScroll
+      {/* <InfiniteScroll
         dataLength={articles.length}
         next={fetchMoreData}
         hasMore={articles.length !== totalResults}
         loader={<LoadingIcon />}
-      >
+      > */}
         <div className="container">
-          <div className="row align-middle">
+          <div className="news-cards-container">
             {articles.map((elem) => {
-              return <div className="col-md-4 my-3 flex-wrap" key={elem.url}>
-                <NewsItem title={elem.title ? elem.title : ""} description={elem.description ? elem.description : ""} author={elem.author} imageUrl={elem.urlToImage ? elem.urlToImage : "https://via.placeholder.com/480x480.png?text=No+Image"} newsUrl={elem.url ? elem.url : ""} date={elem.publishedAt} source={elem.source.name} />
+              return <div key={elem.summary}>
+                <NewsItem title={elem.title ? elem.title : ""} description={elem.summary ? elem.summary : ""} author={elem.author} imageUrl={elem.media ? elem.media : "../images/no_news_img.jpg"} newsUrl={elem.link ? elem.link : ""} source={elem.rights} />
               </div>
             })}
           </div>
         </div>
-      </InfiniteScroll>
+      {/* </InfiniteScroll> */}
     </div>
   )
 }
