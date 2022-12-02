@@ -20,6 +20,6 @@ Infinite-Scroll is also used with pagination to make it feel like endless news s
 
 
 ## Known-bugs:
-Sometimes crashes when launch it for first time, refreshing resolves the issue
-Infinite scroll not working right now
+Sometimes crashes when launch it for first time, refreshing resolves the issue<br>
+Infinite scroll not working right now<br>
 Search is also unstable right now
